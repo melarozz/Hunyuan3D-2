@@ -119,17 +119,20 @@ class ImageProcessorV2:
 
 class MVImageProcessorV2(ImageProcessorV2):
     """
-    view order: front, front clockwise 90, back, front clockwise 270
+    View order: 45, 90, 135, 180, 270 degrees.
+    This processor expects a dictionary with keys as string representations of the view angles.
     """
     return_view_idx = True
 
     def __init__(self, size=512, border_ratio=None):
         super().__init__(size, border_ratio)
+        # Update view2idx mapping for the 5 views you have
         self.view2idx = {
-            'front': 0,
-            'left': 1,
-            'back': 2,
-            'right': 3
+            '45': 0,
+            '90': 1,
+            '135': 2,
+            '180': 3,
+            '270': 4,
         }
 
     def __call__(self, image_dict, border_ratio=0.15, to_tensor=True, **kwargs):
@@ -139,16 +142,20 @@ class MVImageProcessorV2(ImageProcessorV2):
         images = []
         masks = []
         view_idxs = []
-        for idx, (view_tag, image) in enumerate(image_dict.items()):
+        # Process each view and get its corresponding index
+        for view_tag, image in image_dict.items():
+            # You may want to verify that the view_tag is one of the expected keys.
             view_idxs.append(self.view2idx[view_tag])
-            image, mask = self.load_image(image, border_ratio=border_ratio, to_tensor=to_tensor)
-            images.append(image)
-            masks.append(mask)
+            proc_img, proc_mask = self.load_image(image, border_ratio=border_ratio, to_tensor=to_tensor)
+            images.append(proc_img)
+            masks.append(proc_mask)
 
+        # Sort based on the view indices
         zipped_lists = zip(view_idxs, images, masks)
         sorted_zipped_lists = sorted(zipped_lists)
         view_idxs, images, masks = zip(*sorted_zipped_lists)
 
+        # Concatenate along the channel dimension and add a batch dimension
         image = torch.cat(images, 0).unsqueeze(0)
         mask = torch.cat(masks, 0).unsqueeze(0)
         outputs = {
