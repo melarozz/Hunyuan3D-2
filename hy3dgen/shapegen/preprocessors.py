@@ -87,7 +87,7 @@ class ImageProcessorV2:
         mask = mask.clip(0, 255).astype(np.uint8)
         return result, mask
 
-    def load_image(self, image, border_ratio=0.15, to_tensor=True):
+    def load_image(self, image, border_ratio=0.05, to_tensor=True):
         if isinstance(image, str):
             image = cv2.imread(image, cv2.IMREAD_UNCHANGED)
             image, mask = self.recenter(image, border_ratio=border_ratio)

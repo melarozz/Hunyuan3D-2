@@ -18,8 +18,9 @@ from rembg import remove, new_session
 
 class BackgroundRemover():
     def __init__(self):
-        self.session = new_session()
+
+        self.session = new_session("isnet-general-use")
 
     def __call__(self, image: Image.Image):
-        output = remove(image, session=self.session, bgcolor=[255, 255, 255, 0])
+        output = remove(image, session=self.session, bgcolor=[255, 255, 255, 0], post_process_mask=True)
         return output
