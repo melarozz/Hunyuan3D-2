@@ -138,7 +138,7 @@ class DinoImageEncoderMV(DinoImageEncoder):
         config=None,
         use_cls_token=True,
         image_size=224,
-        view_num=4,
+        view_num=5,
         **kwargs,
     ):
         super().__init__(version, config, use_cls_token, image_size, **kwargs)
