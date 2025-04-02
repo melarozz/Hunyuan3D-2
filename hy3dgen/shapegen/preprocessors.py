@@ -17,8 +17,6 @@ import numpy as np
 import torch
 from PIL import Image
 from einops import repeat, rearrange
-from .autocrop import crop_plant
-
 
 def array_to_tensor(np_array):
     image_pt = torch.tensor(np_array).float()
@@ -142,12 +140,6 @@ class MVImageProcessorV2(ImageProcessorV2):
         view_idxs = []
         for idx, (view_tag, image) in enumerate(image_dict.items()):
             view_idxs.append(self.view2idx[view_tag])
-            if isinstance(image, str):
-                try:
-                    image = crop_plant(image)
-                except Exception as e:
-                    print(f"Failed to autocrop a photo {view_tag}: {e}")
-                    continue
             image, mask = self.load_image(image, border_ratio=border_ratio, to_tensor=to_tensor)
             images.append(image)
             masks.append(mask)
